@@ -2,6 +2,7 @@ import os
 import sys
 import logging
 import argparse
+import joblib as pkl
 from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
 
@@ -131,6 +132,23 @@ class Loader:
                 "raw folder is created in the data folder and run again this code".capitalize()
             )
 
+    @staticmethod
+    def quantity_data():
+        """
+        Calculate the total quantity of data points in the processed dataset.
+
+        Returns
+        -------
+        int
+            The total number of data points across all batches in the DataLoader.
+
+        Notes
+        -----
+        This method requires the processed dataset to be saved as a pickle file at the location specified by `PROCESSED_PATH`.
+        """
+        dataloader = pkl.load(filename=os.path.join(PROCESSED_PATH, "dataloader.pkl"))
+        return sum(data.shape[0] for data, _ in dataloader)
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Creating the dataloader".title())
@@ -149,6 +167,8 @@ if __name__ == "__main__":
             loader = Loader(batch_size=args.batch_size)
             dataloader = loader.download_mnist()
             logging.info("Data downloaded successfully".capitalize())
+
+            logging.info("Quantity of the dataset # {}".format(Loader.quantity_data()))
         else:
             raise ValueError("Please provide the batch size".capitalize())
     else:
