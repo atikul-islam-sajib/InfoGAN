@@ -16,3 +16,6 @@
 2024-02-23 19:26:02,963 - root - INFO - Defining the discriminator model
 2024-02-23 19:26:02,971 - root - INFO - Discriminator model defined successfully
 2024-02-23 19:26:03,443 - root - INFO - torch.Size([64, 1])
+2024-02-23 20:05:26,783 - root - INFO - Defining the discriminator model
+2024-02-23 20:05:26,791 - root - INFO - Discriminator model defined successfully
+2024-02-23 20:05:27,271 - root - INFO - torch.Size([64, 1])

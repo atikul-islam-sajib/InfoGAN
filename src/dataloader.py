@@ -44,7 +44,7 @@ class Loader:
     >>> dataloader = loader.download_mnist()
     """
 
-    def __init__(self, batch_size=128):
+    def __init__(self, batch_size=128, image_size=32):
         """
         Initializes the Loader with a specified batch size.
 
@@ -54,6 +54,7 @@ class Loader:
             The number of samples per batch. Default is 128.
         """
         self.batch_size = batch_size
+        self.image_size = image_size
 
     def _do_transformation(self):
         """
@@ -66,7 +67,7 @@ class Loader:
         """
         transform = transforms.Compose(
             [
-                transforms.Resize((28, 28)),
+                transforms.Resize((self.image_size, self.image_size)),
                 transforms.ToTensor(),
                 transforms.Normalize((0.5,), (0.5,)),
             ]
@@ -156,6 +157,9 @@ if __name__ == "__main__":
         "--batch_size", type=int, default=128, help="Define batch size".capitalize()
     )
     parser.add_argument(
+        "--image_size", type=int, default=32, help="Define image size".capitalize()
+    )
+    parser.add_argument(
         "--data", action="store_true", help="Download the data".capitalize()
     )
 
@@ -163,7 +167,7 @@ if __name__ == "__main__":
 
     if args.data:
         logging.info("Downloading the data".capitalize())
-        if args.batch_size:
+        if (args.batch_size and args.image_size) is not None:
             loader = Loader(batch_size=args.batch_size)
             dataloader = loader.download_mnist()
             logging.info("Data downloaded successfully".capitalize())
