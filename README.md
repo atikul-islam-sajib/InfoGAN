@@ -56,23 +56,13 @@ python /path/to/InfoGAN/src/cli.py --help
 
 ### Training the GAN Model
 
-To train the GAN model with default parameters with mps:
+Here's a table summarizing the commands for training the GAN model with default parameters using different devices (MPS, GPU, and CPU):
 
-```
-!python /content/InfoGAN/src/cli.py --batch_size 64 --image_size 32 --in_channels 1 --latent_space 100 --epochs 20 --lr 0.0001 --device mps --data
-```
-
-To train the GAN model with default parameters with gpu:
-
-```
-!python /content/InfoGAN/src/cli.py --batch_size 64 --image_size 32 --in_channels 1 --latent_space 100 --epochs 20 --lr 0.0001 --device cuda --data
-```
-
-To train the GAN model with default parameters with cpu:
-
-```
-!python /content/InfoGAN/src/cli.py --batch_size 64 --image_size 32 --in_channels 1 --latent_space 100 --epochs 20 --lr 0.0001 --device cpu --data
-```
+| Device Type | Command                                                                                                                                               |
+| ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| MPS         | `!python /content/InfoGAN/src/cli.py --batch_size 64 --image_size 32 --in_channels 1 --latent_space 100 --epochs 20 --lr 0.0001 --device mps --data`  |
+| GPU         | `!python /content/InfoGAN/src/cli.py --batch_size 64 --image_size 32 --in_channels 1 --latent_space 100 --epochs 20 --lr 0.0001 --device cuda --data` |
+| CPU         | `!python /content/InfoGAN/src/cli.py --batch_size 64 --image_size 32 --in_channels 1 --latent_space 100 --epochs 20 --lr 0.0001 --device cpu --data`  |
 
 ### Generating Images
 
