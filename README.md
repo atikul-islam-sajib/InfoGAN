@@ -141,7 +141,7 @@ For detailed documentation on the implementation and usage, visit the [InfoGAN D
 
 ## Notebook Training
 
-For detailed documentation on the implementation and usage using notebook, visit the [Notebook for CLI](./notebooks/ModelTrain_CLI.ipynb).
+For detailed documentation on the implementation and usage using notebook, visit the [Notebook for CLI](./notebooks/Modeltrain_CLI.ipynb).
 
 For detailed documentation on the implementation and usage using notebook, visit the [Notebook for Import Modules](./notebooks/ModelTrain_Import_Modules.ipynb).
 
