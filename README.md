@@ -59,19 +59,19 @@ python /path/to/InfoGAN/src/cli.py --help
 To train the GAN model with default parameters with mps:
 
 ```
-!python /content/InfoGAN/src/cli.py --batch_size 64 --image_size 32 --in_channels 1 --latent_space 100 --epochs 20 --lr 0.0001 --device mps a --data --test
+!python /content/InfoGAN/src/cli.py --batch_size 64 --image_size 32 --in_channels 1 --latent_space 100 --epochs 20 --lr 0.0001 --device mps --data
 ```
 
 To train the GAN model with default parameters with gpu:
 
 ```
-!python /content/InfoGAN/src/cli.py --batch_size 64 --image_size 32 --in_channels 1 --latent_space 100 --epochs 20 --lr 0.0001 --device cuda --data --test
+!python /content/InfoGAN/src/cli.py --batch_size 64 --image_size 32 --in_channels 1 --latent_space 100 --epochs 20 --lr 0.0001 --device cuda --data
 ```
 
 To train the GAN model with default parameters with cpu:
 
 ```
-!python /content/InfoGAN/src/cli.py --batch_size 64 --image_size 32 --in_channels 1 --latent_space 100 --epochs 20 --lr 0.0001 --device cpu --data --test
+!python /content/InfoGAN/src/cli.py --batch_size 64 --image_size 32 --in_channels 1 --latent_space 100 --epochs 20 --lr 0.0001 --device cpu --data
 ```
 
 ### Generating Images
@@ -103,7 +103,7 @@ from src.trainer import Trainer
 from src.test import Test
 
 # Initialize the data loader with batch size
-loader = Loader(batch_size128, image_size=64)
+loader = Loader(batch_size = 128, image_size=64)
 dataloader = loader.download_mnist()
 
 #================================================================================================================#
