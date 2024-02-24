@@ -26,6 +26,47 @@ from QNet import QNet
 
 
 class Trainer:
+    """
+    A class used to train a Generative Adversarial Network (GAN) consisting of a Discriminator, Generator, and QNet for auxiliary tasks.
+
+    Parameters:
+    | Parameter      | Type   | Description                                    |
+    |----------------|--------|------------------------------------------------|
+    | epochs         | int    | Number of training epochs.                     |
+    | in_channels    | int    | Number of input channels for images.           |
+    | lr             | float  | Learning rate for optimizers.                  |
+    | latent_space   | int    | Size of the latent space for the generator.    |
+    | batch_size     | int    | Batch size for training.                       |
+    | beat1          | float  | Beta1 hyperparameter for Adam optimizers.      |
+    | device         | str    | Device to use for training ('cuda', 'mps', etc.). |
+    | display        | bool   | Whether to display training progress.          |
+
+    Attributes:
+    | Attribute     | Type              | Description                               |
+    |---------------|-------------------|-------------------------------------------|
+    | dataloader    | DataLoader        | The data loader for training data.        |
+    | net_D         | Discriminator     | The discriminator model.                  |
+    | net_G         | Generator         | The generator model.                      |
+    | net_Q         | QNet              | The QNet model for auxiliary tasks.       |
+    | optimizer_D   | optim.Optimizer   | Optimizer for the discriminator.          |
+    | optimizer_G   | optim.Optimizer   | Optimizer for the generator.              |
+    | optimizer_Q   | optim.Optimizer   | Optimizer for the QNet.                   |
+    | criterion_D   | nn.Module         | Loss function for the discriminator.      |
+    | criterion_Q   | nn.Module         | Loss function for the QNet.               |
+
+    Methods:
+    | Method                  | Parameters            | Description                                   |
+    |-------------------------|-----------------------|-----------------------------------------------|
+    | define_models           | None                  | Initializes the models (D, G, Q) and moves them to the specified device. |
+    | define_optimizer        | net_D, net_G, net_Q   | Defines and returns the optimizers for D, G, and Q models. |
+    | load_data               | None                  | Loads the training data.                      |
+    | train_discriminator     | real_image, real_labels, fake_image, fake_labels | Trains the discriminator with both real and fake images. |
+    | train_generator         | noise_samples, real_labels, batch_size | Trains the generator and QNet.                |
+    | save_checkpoints        | epoch                 | Saves the model checkpoints.                  |
+    | train                   | None                  | Performs the training loop over the specified number of epochs. |
+
+    """
+
     def __init__(
         self,
         epochs=100,
@@ -37,6 +78,24 @@ class Trainer:
         device="mps",
         display=False,
     ):
+        """
+        Initializes the Trainer object with specified parameters, device configuration, model definitions, optimizers, and loss functions.
+
+        Parameters:
+        | Parameter     | Type   | Description                                    |
+        |---------------|--------|------------------------------------------------|
+        | epochs        | int    | Number of training epochs.                     |
+        | in_channels   | int    | Number of input channels for the images.       |
+        | lr            | float  | Learning rate for optimizers.                  |
+        | latent_space  | int    | Size of the latent space for the generator.    |
+        | batch_size    | int    | Batch size for training.                       |
+        | beat1         | float  | Beta1 hyperparameter for Adam optimizers.      |
+        | device        | str    | Device to use for training ('cuda', 'mps', etc.). |
+        | display       | bool   | Whether to display training progress.          |
+
+        Returns:
+        | None
+        """
         self.epochs = epochs
         self.in_channels = in_channels
         self.latent_space = latent_space
@@ -65,6 +124,15 @@ class Trainer:
             self.criterion_Q = nn.CrossEntropyLoss()
 
     def define_models(self):
+        """
+        Initializes the models: Discriminator, Generator, and QNet, and moves them to the specified device.
+
+        Parameters:
+        | None
+
+        Returns:
+        | tuple: A tuple containing initialized models (discriminator, generator, qnet).
+        """
         discriminator = Discriminator(in_channels=self.in_channels).to(self.device)
         generator = Generator(latent_space=self.latent_space).to(self.device)
         qnet = QNet().to(self.device)
@@ -72,6 +140,19 @@ class Trainer:
         return discriminator, generator, qnet
 
     def define_optimizer(self, **params):
+        """
+        Defines and initializes the optimizers for the Discriminator, Generator, and QNet models.
+
+        Parameters:
+        | Parameter | Type          | Description                           |
+        |-----------|---------------|---------------------------------------|
+        | net_D     | Discriminator | The discriminator model.              |
+        | net_G     | Generator     | The generator model.                  |
+        | net_Q     | QNet          | The QNet model for auxiliary tasks.   |
+
+        Returns:
+        | tuple: A tuple containing the optimizers (optimizer_D, optimizer_G, optimizer_Q).
+        """
         optimizer_D = optim.Adam(
             params["net_D"].parameters(), lr=self.lr, betas=(self.beta1, 0.999)
         )
@@ -85,6 +166,15 @@ class Trainer:
         return optimizer_D, optimizer_G, optimizer_Q
 
     def load_data(self):
+        """
+        Loads the training data from a predefined path. If the data loader file exists, it's loaded; otherwise, an exception is raised.
+
+        Parameters:
+        | None
+
+        Returns:
+        | DataLoader: The data loader containing the training data.
+        """
         if os.path.exists(os.path.join(PROCESSED_PATH, "dataloader.pkl")):
             dataloader = pkl.load(
                 filename=os.path.join(PROCESSED_PATH, "dataloader.pkl")
@@ -94,6 +184,20 @@ class Trainer:
             raise Exception("DataLoader cannot be loaded".capitalize())
 
     def train_discriminator(self, **params):
+        """
+        Trains the discriminator model with a batch of real and fake images.
+
+        Parameters:
+        | Parameter    | Type         | Description                          |
+        |--------------|--------------|--------------------------------------|
+        | real_image   | torch.Tensor | A batch of real images.              |
+        | real_labels  | torch.Tensor | Labels indicating real images.       |
+        | fake_image   | torch.Tensor | A batch of fake images generated by the Generator. |
+        | fake_labels  | torch.Tensor | Labels indicating fake images.       |
+
+        Returns:
+        | float: The total loss of the discriminator after training on the batch.
+        """
         self.optimizer_D.zero_grad()
 
         real_loss = self.criterion_D(
@@ -113,6 +217,19 @@ class Trainer:
         return real_loss.item() + fake_loss.item()
 
     def train_generator(self, **params):
+        """
+        Trains the generator and QNet models using a batch of noise samples.
+
+        Parameters:
+        | Parameter     | Type         | Description                               |
+        |---------------|--------------|-------------------------------------------|
+        | noise_samples | torch.Tensor | A batch of noise samples for generating fake images. |
+        | real_labels   | torch.Tensor | Labels indicating real images to fool the discriminator. |
+        | batch_size    | int          | The size of the batch.                    |
+
+        Returns:
+        | tuple: A tuple containing the total loss of the generator and the loss from the QNet.
+        """
         self.optimizer_G.zero_grad()
         self.optimizer_Q.zero_grad()
 
@@ -134,6 +251,17 @@ class Trainer:
         return total_G_loss.item(), QNet_loss.item()
 
     def save_checkpoints(self, **kwargs):
+        """
+        Saves the generator model's state at the specified epoch. If it's the last epoch, saves as the best model.
+
+        Parameters:
+        | Parameter | Type  | Description                      |
+        |-----------|-------|----------------------------------|
+        | epoch     | int   | The current epoch number.        |
+
+        Returns:
+        | None
+        """
         if kwargs["epoch"] != self.epochs:
             if os.path.exists(MODELS_CHECKPOINTS):
                 torch.save(
@@ -151,6 +279,15 @@ class Trainer:
                 )
 
     def train(self):
+        """
+        Performs the training loop over the specified number of epochs, training the Discriminator, Generator, and QNet models.
+
+        Parameters:
+        | None
+
+        Returns:
+        | None
+        """
 
         for epoch in range(self.epochs):
             D_loss = list()
