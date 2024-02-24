@@ -7,6 +7,7 @@ import joblib as pkl
 import numpy as np
 import torch.nn as nn
 import torch.optim as optim
+from torchvision.utils import save_image
 
 sys.path.append("src/")
 
@@ -17,7 +18,7 @@ logging.basicConfig(
     filename="./logs/trainer.log",
 )
 
-from config import PROCESSED_PATH, MODELS_CHECKPOINTS, BEST_MODEL_PATH
+from config import PROCESSED_PATH, MODELS_CHECKPOINTS, BEST_MODEL_PATH, SAVE_IMAGE_PATH
 from utils import device_init, weight_init
 from discriminator import Discriminator
 from generator import Generator
@@ -155,7 +156,7 @@ class Trainer:
             D_loss = list()
             G_loss = list()
             Q_loss = list()
-            for _, (real_image, _) in enumerate(self.dataloader):
+            for index, (real_image, _) in enumerate(self.dataloader):
                 real_image = real_image.to(self.device)
                 batch_size = real_image.size(0)
 
@@ -188,6 +189,17 @@ class Trainer:
                 self.save_checkpoints(epoch=epoch + 1)
             except Exception as e:
                 print("Saving checkpoints is not possible".capitalize())
+            else:
+                if index % 5:
+                    image = self.net_G(
+                        torch.randn(20, self.latent_space, 1, 1).to(self.device)
+                    )
+                    save_image(
+                        image,
+                        os.path.join(SAVE_IMAGE_PATH, "image_{}.png".format(index)),
+                        nrow=5,
+                        normalize=True,
+                    )
 
             try:
                 if self.display:
