@@ -19,9 +19,9 @@ InfoGAN (GAN-based Project for Synthesizing Grayscale images) is a machine learn
 Clone the repository:
 
 ```
-git clone https://github.com/atikul-islam-sajib/FakeImageGenerate.git
+git clone https://github.com/atikul-islam-sajib/InfoGAN.git
 
-cd FakeImageGenerate
+cd InfoGAN
 ```
 
 # Install dependencies
@@ -35,20 +35,22 @@ pip install -r requirements.txt
 Examples of commands and their explanations.
 
 ```bash
-python /path/to/FakeImageGenerate/src/cli.py --help
+python /path/to/InfoGAN/src/cli.py --help
 ```
 
 ### Options
 
-- `--batch_size BATCH_SIZE`: Set the batch size for the dataloader. (Default: specify if there's one)
-- `--image_path`: Define the dataset path.
-- `--epochs EPOCHS`: Set the number of training epochs.
-- `--latent_space LATENT_SPACE`: Define the size of the latent space for the model.
-- `--lr LR`: Specify the learning rate for training the model.
-- `--num_samples SAMPLES`: Determine the number of samples to generate after training.
-- `--test`: Run tests with synthetic data to validate model performance.
-- `--device`: Train the model with CPU, GPU, MPS.
-- `--display`: Display the critic loss and generator loss in each iterations[True/False]
+- `--batch_size` (int): Defines the batch size for training the model. Default is 128.
+- `--image_size` (int): Specifies the size of images (height and width) to be used. Default is 32.
+- `--in_channels` (int): Number of input channels in the images. This is required for model configuration.
+- `--latent_space` (int): Dimensionality of the latent space from which the generator creates images. Default is 100.
+- `--epochs` (int): Number of training epochs. Default is 10.
+- `--lr` (float): Learning rate for the optimizer. Default is 0.0002.
+- `--display` (bool): Flag to enable or disable display of generated images during training. Default is True.
+- `--device` (str): Specifies the computing device ('cuda' or 'cpu') for model training and inference. Default is 'cuda'.
+- `--num_samples` (int): Number of images to generate for testing. Default is 20.
+- `--data` (action): Flag to indicate the use of MNIST digit data for the model. No default.
+- `--test` (action): Flag to indicate testing mode. No default.
 
 ## Training and Generating Images(CLI)
 
@@ -57,19 +59,19 @@ python /path/to/FakeImageGenerate/src/cli.py --help
 To train the GAN model with default parameters with mps:
 
 ```
-!python /content/FakeImageGenerate/src/cli.py  --epochs 200 --latent_space 100 --image_size 64  --lr 0.00005 --device mps --batch_size 64 --image_path /image.zip/ --display True
+!python /content/InfoGAN/src/cli.py --batch_size 64 --image_size 32 --in_channels 1 --latent_space 100 --epochs 20 --lr 0.0001 --device mps a --data --test
 ```
 
 To train the GAN model with default parameters with gpu:
 
 ```
-!python /content/FakeImageGenerate/src/cli.py  --epochs 200 --latent_space 100 --image_size 64  --lr 0.00005 --device gpu --batch_size 64 --critic_steps 5 --image_path /image.zip --display True
+!python /content/InfoGAN/src/cli.py --batch_size 64 --image_size 32 --in_channels 1 --latent_space 100 --epochs 20 --lr 0.0001 --device cuda --data --test
 ```
 
 To train the GAN model with default parameters with cpu:
 
 ```
-!python /content/FakeImageGenerate/src/cli.py  --epochs 200 --latent_space 100 --image_size 64 --lr 0.00005 --device cpu --batch_size 64 --image_path /image.zip --display True
+!python /content/InfoGAN/src/cli.py --batch_size 64 --image_size 32 --in_channels 1 --latent_space 100 --epochs 20 --lr 0.0001 --device cpu --data --test
 ```
 
 ### Generating Images
@@ -77,7 +79,7 @@ To train the GAN model with default parameters with cpu:
 To generate images using the trained model:
 
 ```
-!python /content/FakeImageGenerate/src/cli.py --num_samples 20 --latent_space 100 --test
+!python /content/InfoGAN/src/cli.py --num_samples 20 --latent_space 100 --device mps --test
 ```
 
 ### Viewing Generated Images
@@ -86,7 +88,7 @@ Check the specified output directory for the generated images.
 
 ```
 from IPython.display import Image
-Image(filename='/content/FakeImageGenerate/outputs/fake_image.png')
+Image(filename='/outputs/output_image/generated_images.png')
 ```
 
 ## Core Script Usage
@@ -101,39 +103,41 @@ from src.trainer import Trainer
 from src.test import Test
 
 # Initialize the data loader with batch size
-loader = Loader(
-    image_path = "/content/drive/MyDrive/anime.zip",
-    batch_size = 128,
-    image_height = 64,
-    image_width = 64,
-    normalized = True)
-
-    dataloader = loader.extract_features()
-    loader.create_dataloader()
+loader = Loader(batch_size128, image_size=64)
+dataloader = loader.download_mnist()
 
 #================================================================================================================#
 
 # Set up the trainer with learning rate, epochs, and latent space size
-trainer = Trainer( device = "cuda", latent_space = 100, image_size = 64, lr = 0.0002, epochs = 20, display = True)
+trainer = Trainer(
+    epochs=200,
+    in_channels=1,
+    lr=0.0002,
+    latent_space=100,
+    batch_size=128,
+    display=True,
+    device="mps")
+
 trainer.train()
 
 #================================================================================================================#
 
 # Test the generated dataset and display the synthetic images
-test = Test( latent_space=100, num_samples =20, device="cuda")
+test = Test(latent_space=100, num_samples=20)
+
 test.test()
 
 #================================================================================================================#
 
 from IPython.display import Image
-Image("/content/FakeImageGenerate/outputs/fake_image.png")
+Image("/outputs/output_image/generated_images.png")
 ```
 
 This script initializes the data loader, downloads the Custom dataset, and prepares the data loader. It then sets up and starts the training process for the GAN model.
 
 ## Documentation
 
-For detailed documentation on the implementation and usage, visit the [FakeImageGenerator Documentation](https://atikul-islam-sajib.github.io/FIG-deploy/).
+For detailed documentation on the implementation and usage, visit the [InfoGAN Documentation](https://atikul-islam-sajib.github.io/FIG-deploy/).
 
 ## Notebook Training
 
@@ -151,7 +155,7 @@ This project is licensed under [MIT LICENSE](./LICENSE). Please see the LICENSE 
 
 ## Acknowledgements
 
-Thanks to all contributors and users of the GPWGAN project. Special thanks to those who have provided feedback and suggestions for improvements.
+Thanks to all contributors and users of the InfoGAN project. Special thanks to those who have provided feedback and suggestions for improvements.
 
 ## Contact
 
