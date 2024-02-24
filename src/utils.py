@@ -34,9 +34,9 @@ def weight_init(m):
         nn.init.constant_(m.bias.data, 0)
         
         
-def device(device = "cpu"):
+def device_init(device = "cpu"):
     if device == "mps":
-        return torch.device("mps" if torch.mps.backends.is_available() else "cpu")
+        return torch.device("mps" if torch.backends.mps.is_available() else "cpu")
     elif device == "cuda":
         return torch.device("cuda" if torch.cuda.is_available() else "cpu")
     else:

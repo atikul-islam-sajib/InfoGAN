@@ -51,7 +51,7 @@ class Discriminator(nn.Module):
             (1, 128, 4, 2, 1, 0.2, False),
             (128, 256, 4, 2, 1, 0.2, True),
             (256, 512, 4, 2, 1, 0.2, True),
-            (512, 1, 4, 2, 1),
+            (512, 1, 4, 1, 0),
         ]
 
         self.model = self.connected_layer(config_layer=self.config_layer)
@@ -78,13 +78,24 @@ class Discriminator(nn.Module):
         layers = OrderedDict()
         if config_layer is not None:
             for index, (
-                in_channels,out_channels,kernel_size,stride,padding,slope,batch_norm) in enumerate(config_layer[:-1]):
+                in_channels,
+                out_channels,
+                kernel_size,
+                stride,
+                padding,
+                slope,
+                batch_norm,
+            ) in enumerate(config_layer[:-1]):
                 layers[f"conv_{index+1}"] = nn.Conv2d(
-                    in_channels=in_channels,out_channels=out_channels,kernel_size=kernel_size,stride=stride,padding=padding,
+                    in_channels=in_channels,
+                    out_channels=out_channels,
+                    kernel_size=kernel_size,
+                    stride=stride,
+                    padding=padding,
                 )
                 if batch_norm:
                     layers[f"batch_norm_{index+1}"] = nn.BatchNorm2d(out_channels)
-                    
+
                 layers[f"leaky_relu_{index+1}"] = nn.LeakyReLU(slope)
 
             (in_channels, out_channels, kernel_size, stride, padding) = config_layer[-1]

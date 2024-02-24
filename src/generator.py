@@ -85,9 +85,19 @@ class Generator(nn.Module):
         layers = OrderedDict()
         if layers_config is not None:
             for index, (
-                in_channels,out_channels,kernel_size,stride,padding,batch_norm) in enumerate(layers_config[:-1]):
+                in_channels,
+                out_channels,
+                kernel_size,
+                stride,
+                padding,
+                batch_norm,
+            ) in enumerate(layers_config[:-1]):
                 layers["conv_transpose_{}".format(index + 1)] = nn.ConvTranspose2d(
-                    in_channels=in_channels,out_channels=out_channels,kernel_size=kernel_size,stride=stride,padding=padding,
+                    in_channels=in_channels,
+                    out_channels=out_channels,
+                    kernel_size=kernel_size,
+                    stride=stride,
+                    padding=padding,
                 )
                 if batch_norm:
                     layers["batch_norm_{}".format(index + 1)] = nn.BatchNorm2d(
@@ -100,7 +110,11 @@ class Generator(nn.Module):
                 -1
             ]
             layers[f"out_conv"] = nn.ConvTranspose2d(
-                in_channels=in_channels,out_channels=out_channels,kernel_size=kernel_size,stride=stride,padding=padding,
+                in_channels=in_channels,
+                out_channels=out_channels,
+                kernel_size=kernel_size,
+                stride=stride,
+                padding=padding,
             )
             layers[f"out_tanh"] = nn.Tanh()
 
