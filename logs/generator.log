@@ -1,6 +1,0 @@
-2024-02-23 19:55:35,183 - root - INFO - Generator model is being created
-2024-02-23 19:55:35,193 - root - INFO - Generator model is created
-2024-02-23 19:55:35,214 - root - INFO - torch.Size([64, 1, 32, 32])
-2024-02-23 20:09:27,546 - root - INFO - Generator model is being created
-2024-02-23 20:09:27,557 - root - INFO - Generator model is created
-2024-02-23 20:09:27,577 - root - INFO - torch.Size([64, 1, 32, 32])
