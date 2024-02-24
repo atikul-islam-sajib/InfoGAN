@@ -135,9 +135,9 @@ Image("/outputs/output_image/generated_images.png")
 
 This script initializes the data loader, downloads the Custom dataset, and prepares the data loader. It then sets up and starts the training process for the GAN model.
 
-## Documentation
+<!-- ## Documentation
 
-For detailed documentation on the implementation and usage, visit the [InfoGAN Documentation](https://atikul-islam-sajib.github.io/FIG-deploy/).
+For detailed documentation on the implementation and usage, visit the [InfoGAN Documentation](https://atikul-islam-sajib.github.io/FIG-deploy/). -->
 
 ## Notebook Training
 
