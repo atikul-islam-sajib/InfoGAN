@@ -215,13 +215,69 @@ class Trainer:
 
 
 if __name__ == "__main__":
-    trainer = Trainer(
-        epochs=1,
-        in_channels=1,
-        lr=0.0002,
-        latent_space=100,
-        batch_size=128,
-        display=True,
-        device="mps",
+    parser = argparse.ArgumentParser(description="Trainer".title())
+    parser.add_argument(
+        "--epochs", type=int, default=10, help="Define the epochs".capitalize()
     )
-    trainer.train()
+    parser.add_argument(
+        "--lr", type=float, default=0.0002, help="Define the learning rate".capitalize()
+    )
+    parser.add_argument(
+        "--batch_size", type=int, default=128, help="Define the batch size".capitalize()
+    )
+    parser.add_argument(
+        "--latent_space",
+        type=int,
+        default=100,
+        help="Define the latent space".capitalize(),
+    )
+    parser.add_argument(
+        "--display",
+        type=bool,
+        default=True,
+        help="Define if you want to display or not".capitalize(),
+    )
+    parser.add_argument(
+        "--device", type=str, default="cuda", help="Define the device".capitalize()
+    )
+    parser.add_argument(
+        "--in_channels",
+        type=int,
+        default=1,
+        help="Define the number of channels".capitalize(),
+    )
+    parser.add_argument(
+        "--train", action="store_true", help="Train the model".capitalize()
+    )
+
+    args = parser.parse_args()
+
+    if args.train:
+        if (
+            args.device
+            and args.epochs
+            and args.lr
+            and args.batch_size
+            and args.latent_space
+            and args.display
+            and args.in_channels
+        ):
+            logging.info("Training the model".capitalize())
+
+            trainer = Trainer(
+                epochs=args.epochs,
+                in_channels=args.in_channels,
+                lr=args.lr,
+                latent_space=args.latent_space,
+                batch_size=args.batch_size,
+                display=args.display,
+                device=args.device,
+            )
+            trainer.train()
+
+            logging.info("Training finished".capitalize())
+        else:
+            logging.exception("All arguments should be defined".capitalize())
+
+    else:
+        logging.exception("Training should be defined".capitalize())
